@@ -1,4 +1,15 @@
+#define _XOPEN_SOURCE
+
 #include "systemcalls.h"
+#include <errno.h>
+#include <fcntl.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 /**
  * @param cmd the command to execute with system()
@@ -9,6 +20,7 @@
 */
 bool do_system(const char *cmd)
 {
+    
 
 /*
  * TODO  add your code here
@@ -16,6 +28,14 @@ bool do_system(const char *cmd)
  *   and return a boolean true if the system() call completed with success
  *   or false() if it returned a failure
 */
+
+    int ret;
+    ret = system(cmd); // Dereference cmd ptr to use value
+
+    if(ret == -1) {
+        //fprintf(stderr, "Error executing system(): %s", strerror(errno));
+        return false;
+    } 
 
     return true;
 }
@@ -36,18 +56,23 @@ bool do_system(const char *cmd)
 
 bool do_exec(int count, ...)
 {
+    int status;
+    pid_t pid;
     va_list args;
     va_start(args, count);
-    char * command[count+1];
+    char *command[count+1];
     int i;
+
     for(i=0; i<count; i++)
     {
         command[i] = va_arg(args, char *);
     }
     command[count] = NULL;
+
     // this line is to avoid a compile warning before your implementation is complete
     // and may be removed
     command[count] = command[count];
+    va_end(args);
 
 /*
  * TODO:
@@ -58,10 +83,29 @@ bool do_exec(int count, ...)
  *   as second argument to the execv() command.
  *
 */
-
-    va_end(args);
-
-    return true;
+    fflush(stdout); // Clear stdout buffer
+    switch(pid = fork())
+    {
+        case -1:
+            perror("fork");
+            return false;
+        case 0:
+            execv(command[0], command);
+            perror("execv"); // returns only if error
+            exit(EXIT_FAILURE);
+        default:
+            if(waitpid(pid, &status, 0) == -1) {
+                perror("waitpid");
+                return false;
+            }
+            else if(WIFEXITED(status)) {
+                return WEXITSTATUS(status) == 0;
+            }
+            else {
+                return false;
+            }
+    }
+    return false;
 }
 
 /**
@@ -73,7 +117,7 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
 {
     va_list args;
     va_start(args, count);
-    char * command[count+1];
+    char *command[count+1];
     int i;
     for(i=0; i<count; i++)
     {
@@ -94,6 +138,37 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
 */
 
     va_end(args);
+    // ########################################################
+    int fd,status;
+    pid_t pid;
 
-    return true;
+    fd = open(outputfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if(fd == -1) {
+        perror("open");
+        return false;
+    }
+
+    fflush(stdout); // Empty stdout buffer
+    switch(pid = fork())
+    {
+        case -1:
+            perror("fork");
+            return false;
+        case 0:
+            if(fd != STDOUT_FILENO) {
+                if(dup2(fd, STDOUT_FILENO) == -1) {
+                    perror("dup2");
+                    return false;
+                }
+            }
+            execv(command[0], command);
+            perror("execv");
+            return false;
+        default:
+            close(fd);
+            if(waitpid(pid, &status, 0) == -1) {
+                return false;
+            }
+    }
+    return false;
 }
