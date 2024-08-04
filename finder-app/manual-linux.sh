@@ -125,14 +125,11 @@ echo "Device nodes SUCCESS................................"
 # TODO: Copy the finder related scripts and executables to the /home directory
 # on the target rootfs
 echo "Copying finder/writer programs ....................."
-cp ${ASSIGN2_FINDER_WRITER}/Makefile ${OUTDIR}/rootfs/home
 cp ${ASSIGN2_FINDER_WRITER}/finder-test.sh ${OUTDIR}/rootfs/home
 cp ${ASSIGN2_FINDER_WRITER}/finder.sh ${OUTDIR}/rootfs/home 
-cp ${ASSIGN2_FINDER_WRITER}/writer.c ${OUTDIR}/rootfs/home
 
 cp -r ${ASSIGN2_FINDER_WRITER}/../conf ${OUTDIR}/rootfs/home
 cd ${OUTDIR}/rootfs/home
-make CROSS_COMPILE=aarch64-none-linux-gnu-
 
 cp ${ASSIGN2_FINDER_WRITER}/../conf/* ${OUTDIR}/rootfs/home
 cp ${FINDER_APP_DIR}/autorun-qemu.sh ${OUTDIR}/rootfs/home 
