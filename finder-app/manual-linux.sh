@@ -90,6 +90,7 @@ fi
 
 # TODO: Make and install busybox
 echo "Installing busybox.................................."
+make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE}
 make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} CONFIG_PREFIX=${OUTDIR}/rootfs install
 echo "busybox install SUCCESS............................."
 
@@ -121,6 +122,12 @@ else
     echo "null and console devices already exist"
 fi
 echo "Device nodes SUCCESS................................"
+
+# Clean and build the writer utility
+cd ${FINDER_APP_DIR}
+make clean 
+make CROSS_COMPILE=${CROSS_COMPILE}
+
 
 # TODO: Copy the finder related scripts and executables to the /home directory
 # on the target rootfs
