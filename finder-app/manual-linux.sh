@@ -5,12 +5,11 @@
 set -e
 set -u
 
-OUTDIR=/tmp/aeld
+OUTDIR=/home/romancampbell/Coursera/Linux_Intro_to_Buildroot/assign3_kernel
 KERNEL_REPO=git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
 KERNEL_VERSION=v5.1.10
 BUSYBOX_VERSION=1_33_1
 FINDER_APP_DIR=$(realpath $(dirname $0))
-ASSIGN2_FINDER_WRITER=/home/romancampbell/Coursera/Linux_Intro_to_Buildroot/assignment-2-romanzc2011/finder-app
 ARCH=arm64
 CROSS_COMPILE=aarch64-none-linux-gnu-
 SYSROOT=$(which ${CROSS_COMPILE}gcc)
@@ -105,11 +104,9 @@ ${CROSS_COMPILE}readelf -a bin/busybox | grep "Shared library"
 
 # TODO: Add library dependencies to rootfs
 cp ${SYSROOT_LIB}/lib/ld-linux-aarch64.so.1 ${OUTDIR}/rootfs/lib 
-
 cp ${SYSROOT_LIB}/lib64/libm.so.6 ${OUTDIR}/rootfs/lib64
 cp ${SYSROOT_LIB}/lib64/libresolv.so.2 ${OUTDIR}/rootfs/lib64 
 cp ${SYSROOT_LIB}/lib64/libc.so.6 ${OUTDIR}/rootfs/lib64
-echo "Library copy complete..............................."
 
 echo "Make device nodes..................................."
 if [ ! -e ${OUTDIR}/rootfs/dev/null ];
@@ -121,29 +118,27 @@ then
 else
     echo "null and console devices already exist"
 fi
-echo "Device nodes SUCCESS................................"
 
 # Clean and build the writer utility
 cd ${FINDER_APP_DIR}
 make clean 
 make CROSS_COMPILE=${CROSS_COMPILE}
 
-
 # TODO: Copy the finder related scripts and executables to the /home directory
 # on the target rootfs
-echo "Copying finder/writer programs ....................."
-cp ${ASSIGN2_FINDER_WRITER}/finder-test.sh ${OUTDIR}/rootfs/home
-cp ${ASSIGN2_FINDER_WRITER}/finder.sh ${OUTDIR}/rootfs/home 
+cp ${FINDER_APP_DIR}/finder-test.sh ${OUTDIR}/rootfs/home
+cp ${FINDER_APP_DIR}/finder.sh ${OUTDIR}/rootfs/home
+cp ${FINDER_APP_DIR}/autorun-qemu.sh ${OUTDIR}/rootfs/home
+cp ${FINDER_APP_DIR}/writer ${OUTDIR}/rootfs/home
 
-cp -r ${ASSIGN2_FINDER_WRITER}/../conf ${OUTDIR}/rootfs/home
-cd ${OUTDIR}/rootfs/home
+mkdir -p ${OUTDIR}/rootfs/home
+cp -r /home/romancampbell/Coursera/Linux_Intro_to_Buildroot/assignment-2-romanzc2011/conf  ${OUTDIR}/rootfs/home    
+echo "assignment3" > ${OUTDIR}/rootfs/home/conf/assignment.txt
+echo "romanzc2011" > ${OUTDIR}/rootfs/home/conf/username.txt
 
-cp ${ASSIGN2_FINDER_WRITER}/../conf/* ${OUTDIR}/rootfs/home
-cp ${FINDER_APP_DIR}/autorun-qemu.sh ${OUTDIR}/rootfs/home 
-
-cd ${OUTDIR}/rootfs
 sudo chown -R root:root ${OUTDIR}/rootfs
 
+cd ${OUTDIR}/rootfs
 find . | cpio -H newc -ov --owner root:root > ${OUTDIR}/initramfs.cpio
 gzip ${OUTDIR}/initramfs.cpio
 echo "Build COMPLETE"
