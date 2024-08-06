@@ -132,8 +132,8 @@ cp ${FINDER_APP_DIR}/autorun-qemu.sh ${OUTDIR}/rootfs/home
 cp ${FINDER_APP_DIR}/writer ${OUTDIR}/rootfs/home
 
 mkdir -p ${OUTDIR}/rootfs/home/conf
-cp conf/username.txt ${OUTDIR}/rootfs/conf/username.txt 
-cp conf/assignment.txt ${OUTDIR}/rootfs/conf/assignment.txt 
+cp -L ${FINDER_APP_DIR}/conf/username.txt ${OUTDIR}/rootfs/home/conf/username.txt 
+cp -L ${FINDER_APP_DIR}/conf/assignment.txt ${OUTDIR}/rootfs/home/conf/assignment.txt 
 
 sudo chown -R root:root ${OUTDIR}/rootfs
 
