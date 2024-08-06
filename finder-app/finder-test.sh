@@ -8,7 +8,7 @@ set -u
 NUMFILES=10
 WRITESTR=AELD_IS_FUN
 WRITEDIR=/tmp/aeld-data
-username="romanzc2011"
+username=$(cat conf/username.txt)
 
 if [ $# -lt 3 ]
 then
@@ -31,9 +31,10 @@ echo "Writing ${NUMFILES} files containing string ${WRITESTR} to ${WRITEDIR}"
 
 rm -rf "${WRITEDIR}"
 
-# create $WRITEDIR i 
+# create $WRITEDIR if not assignment1
+assignment=`cat conf/assignment.txt`
 
-if [ $assignment != 'assignment3' ]
+if [ $assignment != 'assignment1' ]
 then
 	mkdir -p "$WRITEDIR"
 
@@ -47,6 +48,9 @@ then
 		exit 1
 	fi
 fi
+
+# make the writer utility
+
 
 for i in $( seq 1 $NUMFILES)
 do

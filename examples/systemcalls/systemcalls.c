@@ -33,7 +33,7 @@ bool do_system(const char *cmd)
     ret = system(cmd); // Dereference cmd ptr to use value
 
     if(ret == -1) {
-        //fprintf(stderr, "Error executing system(): %s", strerror(errno));
+        perror("system");
         return false;
     } 
 

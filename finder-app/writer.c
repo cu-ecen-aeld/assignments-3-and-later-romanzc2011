@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     if(argc != 3)
     {
         syslog(LOG_ERR, "Invalid number of arguments: %d", argc);
-        fprintf(stderr, "Usage: <filename> <string>\n", strerror(errno));
+        fprintf(stderr, "Usage: <filename> <string> %s\n", strerror(errno));
         return 1;
     }
 
