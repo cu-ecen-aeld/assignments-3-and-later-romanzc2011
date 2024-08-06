@@ -131,10 +131,9 @@ cp ${FINDER_APP_DIR}/finder.sh ${OUTDIR}/rootfs/home
 cp ${FINDER_APP_DIR}/autorun-qemu.sh ${OUTDIR}/rootfs/home
 cp ${FINDER_APP_DIR}/writer ${OUTDIR}/rootfs/home
 
-mkdir -p ${OUTDIR}/rootfs/home
-cp -r /home/romancampbell/Coursera/Linux_Intro_to_Buildroot/assignment-2-romanzc2011/conf  ${OUTDIR}/rootfs/home    
-echo "assignment3" > ${OUTDIR}/rootfs/home/conf/assignment.txt
-echo "romanzc2011" > ${OUTDIR}/rootfs/home/conf/username.txt
+mkdir -p ${OUTDIR}/rootfs/home/conf
+cp conf/username.txt ${OUTDIR}/rootfs/conf/username.txt 
+cp conf/assignment.txt ${OUTDIR}/rootfs/conf/assignment.txt 
 
 sudo chown -R root:root ${OUTDIR}/rootfs
 
